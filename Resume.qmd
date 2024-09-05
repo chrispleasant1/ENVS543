@@ -1,6 +1,6 @@
 ---
 title: "Resume"
-format: revealjs
+format: html
 editor: visual
 ---
 
@@ -13,3 +13,6 @@ editor: visual
 -   2017
 
     **Riverbend High School**
+---
+
+## 
