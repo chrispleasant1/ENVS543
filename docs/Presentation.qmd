@@ -1,0 +1,57 @@
+---
+title: "Presentation"
+author: "Chris Pleasant"
+date: "2024-09-05"
+format: revealjs
+editor: visual
+---
+
+---
+title: "My Interests in Environmental Studies"
+author: "Chris Pleasant"
+date: "2024-09-05"
+format: revealjs
+editor: visual
+---
+
+# Introduction
+
+-   I am a fashion designer with a growing passion for environmental sustainability.
+-   Currently living in Richmond, Virginia, my focus is on merging fashion with environmental accountability.
+-   This presentation highlights my journey from fashion design to my growing interest in environmental studies.
+
+# Fashion Design & Environmental Accountability
+
+-   Fashion Industry Experience:
+    -   Worked in New York’s fashion industry, observing the prevalent issues of greenwashing.
+    -   Focused on reducing the environmental impact of synthetic materials.
+-   Environmental Advocacy:
+    -   Committed to challenging conventional norms and pushing for more sustainable practices in apparel production.
+
+# Interest in Marine Biology & Microplastics
+
+-   Microplastics in Fashion:
+    -   Understanding the life cycle of synthetic fabrics and their role in marine pollution.
+    -   Impact of microplastics on marine ecosystems and aquatic life.
+-   Research Goals:
+    -   Exploring the connection between fashion and marine biology to develop practical solutions.
+
+# Hands-On Environmental Work
+
+-   Volunteering with the Billion Oyster Project:
+    -   Participated in restoring oyster reefs in New York Harbor.
+    -   Gained hands-on experience in environmental restoration, data collection, and community involvement.
+-   Insights:
+    -   Learned the importance of collaboration between scientific research and local communities.
+
+# Future Aspirations & Studies
+
+-   Pursuing Environmental Technology:
+    -   Eager to explore how GIS, hydrogeology, and stream ecology can intersect with fashion.
+    -   Interested in applying this knowledge to promote environmental conservation within the fashion industry.
+-   Study Abroad:
+    -   Planning to study in Shanghai to broaden my understanding of global environmental practices.
+
+# Thank You
+
+-   
