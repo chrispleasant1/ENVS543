@@ -1,0 +1,61 @@
+---
+title: "Summary Tabular Data"
+author: Chris Pleasant
+date: "October 1, 2024"
+format: html
+editor: visual
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(knitr)
+library(kableExtra)
+library(dplyr)
+library(lubridate)
+```
+
+# Abstract
+
+This document provides an analysis of longitudinal water quality measurements from the Bay area, covering the period from 1990 to 2019. The study focuses on key parameters such as salinity, dissolved oxygen, pH, and temperatures, exploring their trends and fluctuations over nearly three decades.
+
+# Introduction
+
+The data for this study was obtained from the U.S. Government's open data platform, specifically from the "Water Quality Data" dataset, which contains extensive water quality records from the Bay area spanning from 1990 to 2019. This dataset includes various parameters such as pH, dissolved oxygen levels, temperature, and salinity, among others, which are critical for assessing aquatic environmental health. By analyzing this data, we gained insights into long-term ecological changes, seasonal variations, and potential environmental impacts on the Bay area
+
+# Methods
+
+The dataset comprises measurements of salinity, dissolved oxygen, pH, water and air temperatures, among other variables, recorded over a span of nearly 30 years. Data analysis was performed using R, with the `dplyr` package for data manipulation and the `kableExtra` package for generating formatted tables. This approach facilitates a comprehensive exploration of environmental trends.
+
+# Results
+
+```{r results}
+
+data <- read.csv("BKB_WaterQualityData_2020084.csv")
+
+
+
+
+
+
+yearly_averages <- data %>%
+  filter(Year >= 1990 & Year <= 2019) %>%
+  group_by(Year) %>%
+  summarise(
+    Salinity_mean = mean(Salinity..ppt., na.rm = TRUE),  
+    DO_mean = mean(Dissolved.Oxygen..mg.L., na.rm = TRUE),
+    pH_mean = mean(pH..standard.units., na.rm = TRUE),  
+    Temp_mean = mean(Water.Temp...C., na.rm = TRUE)  
+  )
+
+
+
+kable(yearly_averages, format = "html", booktabs = TRUE) %>%
+  kable_styling(latex_options = c("striped", "scale_down")) %>%
+  column_spec(1, bold = TRUE, color = "blue")2
+```
+
+# Discussion
+
+Analysis of the water quality data from 1990 to 2019 revealed several key trends: **Salinity**: Showed fluctuations with notable increases in the later years, potentially indicating changes in tidal influence or freshwater input.  **Dissolved Oxygen**: Levels were relatively stable with some years showing slight decreases, which are crucial for aquatic life sustainability.  **pH Levels**: Varied slightly over the years, reflecting changes in water acidity that could be influenced by environmental factors.  **Water Temperature**: Increased gradually, highlighting potential impacts of global warming on local aquatic environments.
+
+These findings underscore the need for ongoing monitoring and comprehensive environmental management strategies to mitigate adverse effects and support aquatic ecosystem health.

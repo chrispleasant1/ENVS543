@@ -1,0 +1,40 @@
+---
+title: "Functionin-classactivity"
+format: html
+editor: visual
+---
+
+```{r}
+
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+
+url <- "https://docs.google.com/spreadsheets/d/1Mk1YGH9LqjF7drJE-td1G_JkdADOU0eMlrP01WFBT8s/pub?gid=0&single=true&output=csv"
+
+# Read in the data
+rice <- read.csv("Desktop/543/RiceRiversCenter_PierWaterQualityData_2014 - Data copy.csv")
+
+# 1. Make Date object
+rice$DateTime <- as.POSIXct(rice$DateTime, format="%m/%d/%Y %I:%M:%S %p")
+
+# 2. Create month and weekday objects
+rice$Month <- month(rice$DateTime, label=TRUE)  
+rice$Weekday <- wday(rice$DateTime, label=TRUE)  
+
+# 3. Convert Fahrenheit to Celsius
+rice$AirTempC <- (rice$AirTempF - 32) * 5 / 9  
+
+# 4. Get rid of extra data
+rice <- select(rice, -RecordID, -WindSpeed_mph, -RelHumidity, -$AirTempC, -PH_mv, -Rain_in )  # Remove unnecessary columns
+
+# 5. Reorder the columns
+rice <- rice %>% select(DateTime, Month, Weekday, AirTempC, everything())  # Reorder columns
+
+
+head(rice)
+View(RiceRiversCenter_PierWaterQualityData_2014_Data_copy)
+
+
+```
+
