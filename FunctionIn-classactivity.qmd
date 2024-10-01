@@ -13,7 +13,7 @@ library(lubridate)
 url <- "https://docs.google.com/spreadsheets/d/1Mk1YGH9LqjF7drJE-td1G_JkdADOU0eMlrP01WFBT8s/pub?gid=0&single=true&output=csv"
 
 # Read in the data
-rice <- read.csv("Desktop/543/RiceRiversCenter_PierWaterQualityData_2014 - Data copy.csv")
+rice <- read.csv("")
 
 # 1. Make Date object
 rice$DateTime <- as.POSIXct(rice$DateTime, format="%m/%d/%Y %I:%M:%S %p")

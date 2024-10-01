@@ -2,8 +2,6 @@
 title: "Summary Tabular Data"
 author: Chris Pleasant
 date: "October 1, 2024"
-format: html
-editor: visual
 ---
 
 ```{r setup, include=FALSE}
@@ -28,7 +26,7 @@ The dataset comprises measurements of salinity, dissolved oxygen, pH, water and 
 
 # Results
 
-```{r results}
+```{r}
 
 data <- read.csv("BKB_WaterQualityData_2020084.csv")
 
@@ -47,11 +45,13 @@ yearly_averages <- data %>%
     Temp_mean = mean(Water.Temp...C., na.rm = TRUE)  
   )
 
+yearly_averages |>
+  kable() |>
+  kable_styling()
 
-
-kable(yearly_averages, format = "html", booktabs = TRUE) %>%
-  kable_styling(latex_options = c("striped", "scale_down")) %>%
-  column_spec(1, bold = TRUE, color = "blue")2
+#kable(yearly_averages, format = "html", booktabs = TRUE) %>%
+#  kable_styling(latex_options = c("striped", "scale_down")) %>%
+#  column_spec(1, bold = TRUE, color = "blue")2
 ```
 
 # Discussion
