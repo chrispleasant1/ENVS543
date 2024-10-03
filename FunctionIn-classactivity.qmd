@@ -46,7 +46,8 @@ rice <- rice %>% select(DateTime, Month, Weekday, everything())  # Reorder colum
 
 
 head(rice)
-View(rice)
+
+
 
 
 
