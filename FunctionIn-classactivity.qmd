@@ -4,6 +4,8 @@ format: html
 editor: visual
 ---
 
+View(rice)
+
 ```{r}
 
 library(tidyverse)
@@ -13,27 +15,39 @@ library(lubridate)
 url <- "https://docs.google.com/spreadsheets/d/1Mk1YGH9LqjF7drJE-td1G_JkdADOU0eMlrP01WFBT8s/pub?gid=0&single=true&output=csv"
 
 # Read in the data
-rice <- read.csv("")
+rice <- read_csv("RiceRiversCenter_PierWaterQualityData_2014 - Data.csv")
 
 # 1. Make Date object
 rice$DateTime <- as.POSIXct(rice$DateTime, format="%m/%d/%Y %I:%M:%S %p")
 
 # 2. Create month and weekday objects
-rice$Month <- month(rice$DateTime, label=TRUE)  
-rice$Weekday <- wday(rice$DateTime, label=TRUE)  
+ rice$Month <- format(rice$DateTime, "%m")
+    rice$Day <- format(rice$DateTime, "%d")
+    rice$Weekday <- weekdays(rice$DateTime)
+    
+ rice$Month <- factor(rice$Month, levels = sprintf("%02d", 1:12), ordered = TRUE)
+ 
+rice$Weekday <- factor(rice$Weekday, 
+                       levels = c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"), 
+                       ordered = TRUE)
+
 
 # 3. Convert Fahrenheit to Celsius
 rice$AirTempC <- (rice$AirTempF - 32) * 5 / 9  
 
+
+ rice$Rain_cm <- rice$Rain_in * 2.54
+
 # 4. Get rid of extra data
-rice <- select(rice, -RecordID, -WindSpeed_mph, -RelHumidity, -$AirTempC, -PH_mv, -Rain_in )  # Remove unnecessary columns
+rice <- select(rice, -RecordID, -WindSpeed_mph, -RelHumidity, -AirTempF, -PH_mv, -Rain_in, -Depth_ft)  # Remove unnecessary columns
 
 # 5. Reorder the columns
-rice <- rice %>% select(DateTime, Month, Weekday, AirTempC, everything())  # Reorder columns
+rice <- rice %>% select(DateTime, Month, Weekday, everything())  # Reorder columns
 
 
 head(rice)
-View(RiceRiversCenter_PierWaterQualityData_2014_Data_copy)
+View(rice)
+
 
 
 ```
