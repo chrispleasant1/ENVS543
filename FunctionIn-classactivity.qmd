@@ -45,7 +45,7 @@ rice <- select(rice, -RecordID, -WindSpeed_mph, -RelHumidity, -AirTempF, -PH_mv,
 rice <- rice %>% select(DateTime, Month, Weekday, everything())  # Reorder columns
 
 
-head(rice)
+view(rice)
 
 
 
