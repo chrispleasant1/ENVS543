@@ -13,7 +13,7 @@ library(lubridate)
 url <- "https://docs.google.com/spreadsheets/d/1Mk1YGH9LqjF7drJE-td1G_JkdADOU0eMlrP01WFBT8s/pub?gid=0&single=true&output=csv"
 
 # Read in the data
-rice <- read_csv("RiceRiversCenter_PierWaterQualityData_2014 - Data.csv")
+rice <- read_csv("RiceRiversCenter_PierWaterQualityData_2014 - Data.csv", show_col_types = FALSE)
 
 # 1. Make Date object
 rice$DateTime <- as.POSIXct(rice$DateTime, format="%m/%d/%Y %I:%M:%S %p")
@@ -43,7 +43,7 @@ rice <- select(rice, -RecordID, -WindSpeed_mph, -RelHumidity, -AirTempF, -PH_mv,
 rice <- rice %>% select(DateTime, Month, Weekday, everything())  # Reorder columns
 
 
-view(rice)
+
 
 # 1. Total Rain for Each Weekday in January
 january_rain <- rice %>%
@@ -56,7 +56,7 @@ ggplot(january_rain, aes(x = Weekday, y = Total_Rain)) +
   geom_bar(stat = "identity", fill = "skyblue") +
   labs(title = "Total Rain for Each Weekday in January", x = "Weekday", y = "Total Rain (cm)") +
   theme_minimal()
-
+ view(rice)
 # 2. Average daily temperature for weekdays in February
 february_temp <- rice %>%
   filter(Month == "02") %>%
@@ -89,7 +89,7 @@ ggplot(daily_summary, aes(x = Total_Rain, y = Median_Temp, color = Month)) +
   labs(title = "Scatter Plot of Daily Total Rain vs Median Temperature", x = "Total Rain (cm)", y = "Median Temperature (°C)") +
   theme_minimal()
 
-z # Ensure there are no missing values
+ # Ensure there are no missing values
 
 week_of_jan_8 <- rice %>%
   filter(DateTime >= "2014-01-08" & DateTime <= "2014-01-14") %>%
