@@ -1,12 +1,10 @@
 ---
-title: "functionin-classactivity"
+title: "factor"
 format: html
 editor: visual
 ---
 
 ```{r}
-  
-
 library(tidyverse)
 library(dplyr)
 library(lubridate)
@@ -73,5 +71,4 @@ rice$TideDirection <- ifelse(runif(nrow(rice)) > 0.5, "Incoming", "Outgoing")
 rice$TideDirection <- factor(rice$TideDirection, levels = c("Incoming", "Outgoing"))
 
 view(rice) 
-
 ```
