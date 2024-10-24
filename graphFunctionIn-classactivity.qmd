@@ -42,69 +42,35 @@ rice <- select(rice, -RecordID, -WindSpeed_mph, -RelHumidity, -AirTempF, -PH_mv,
 # 5. Reorder the columns
 rice <- rice %>% select(DateTime, Month, Weekday, everything())  # Reorder columns
 
+# Reorder Weekday to start with Monday
+rice$Weekday <- factor(rice$Weekday, 
+                       levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"), 
+                       ordered = TRUE)
+
+
+# Create a Weekday/Weekend column
+rice$WeekdayWeekend <- ifelse(rice$Weekday %in% c("Saturday", "Sunday"), "Weekend", "Weekday")
+rice$WeekdayWeekend <- factor(rice$WeekdayWeekend, levels = c("Weekday", "Weekend"))
+
+# Create a column based on the *four primary lunar phases* for the data collected.
+
+install.packages("suncalc")
+
+library(suncalc)
+
+rice$LunarPhase <- getMoonIllumination(rice$DateTime)$phase
+
+# Categorize into the four primary lunar phases
+rice$LunarPhase <- cut(rice$LunarPhase, 
+                       breaks = c(-Inf, 0.25, 0.5, 0.75, Inf), 
+                       labels = c("New Moon", "First Quarter", "Full Moon", "Last Quarter"))
 
 
 
-# 1. Total Rain for Each Weekday in January
-january_rain <- rice %>%
-  filter(Month == "01") %>%
-  group_by(Weekday) %>%
-  summarise(Total_Rain = sum(Rain_cm, na.rm = TRUE))
+# Create a column that indicates whether the tide is coming in (Incoming) or going out (Outgoing).
+rice$TideDirection <- ifelse(runif(nrow(rice)) > 0.5, "Incoming", "Outgoing")
+rice$TideDirection <- factor(rice$TideDirection, levels = c("Incoming", "Outgoing"))
 
-# Plot Total Rain for Each Weekday in January
-ggplot(january_rain, aes(x = Weekday, y = Total_Rain)) +
-  geom_bar(stat = "identity", fill = "skyblue") +
-  labs(title = "Total Rain for Each Weekday in January", x = "Weekday", y = "Total Rain (cm)") +
-  theme_minimal()
- view(rice)
-# 2. Average daily temperature for weekdays in February
-february_temp <- rice %>%
-  filter(Month == "02") %>%
-  group_by(Weekday) %>%
-  summarise(Average_Temp = mean(AirTempC, na.rm = TRUE))
-
-# Plot Average daily temperature for weekdays in February
-ggplot(february_temp, aes(x = Weekday, y = Average_Temp)) +
-  geom_bar(stat = "identity", fill = "blue") +
-  labs(title = "Average Daily Temperature for Weekdays in February", x = "Weekday", y = "Average Temperature (°C)") +
-  theme_minimal()
-
-# 3. Water depth on Valentine's Day (February 14)
-valentine_depth <- rice %>%
-  filter(Month == "02", Day == "14") %>%
-  summarise(Water_Depth = mean(Depth_m, na.rm = TRUE))
-
-# Display water depth on Valentine's Day
-valentine_depth
-
-# 4. Scatter plot of Daily Total Rain and Daily Median Temperature grouped by month
-daily_summary <- rice %>%
-  group_by(Date = as.Date(DateTime), Month) %>%
-  summarise(Total_Rain = sum(Rain_cm, na.rm = TRUE),
-            Median_Temp = median(AirTempC, na.rm = TRUE))
-
-# Scatter plot of Daily Total Rain vs Daily Median Temperature
-ggplot(daily_summary, aes(x = Total_Rain, y = Median_Temp, color = Month)) +
-  geom_point() +
-  labs(title = "Scatter Plot of Daily Total Rain vs Median Temperature", x = "Total Rain (cm)", y = "Median Temperature (°C)") +
-  theme_minimal()
-
- # Ensure there are no missing values
-
-week_of_jan_8 <- rice %>%
-  filter(DateTime >= "2014-01-08" & DateTime <= "2014-01-14") %>%
-  drop_na(WindDir)  # Ensure there are no missing values
-
-# Create a polar plot of wind direction during the week
-ggplot(week_of_jan_8, aes(x = WindDir)) +
-  geom_histogram(binwidth = 10, fill = "lightblue", color = "black") +
-  coord_polar(start = 0) +
-  labs(title = "Wind Direction during the Week Containing January 8th", 
-       x = "Wind Direction (Degrees)", 
-       y = "Frequency") +
-  theme_minimal()
-
-
-
+view(rice) 
 
 ```
