@@ -1,0 +1,68 @@
+---
+title: "In Class Activity"
+
+output:
+  html_document:
+    highlight: "default"
+---
+
+```{r}
+# Set working directory
+
+setwd("/Users/chrispleasant/Desktop/ENVS543")
+
+# Load necessary libraries
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(suncalc)
+
+
+
+# Read the CSV file
+my_data <- read.csv("RiceRiversCenter_PierWaterQualityData_2014 - Data.csv")
+
+# Print the first few rows to check
+head(my_data)
+
+# Read in the data (local file)
+rice <- read_csv("RiceRiversCenter_PierWaterQualityData_2014 - Data.csv", show_col_types = FALSE)
+
+
+# 1. Convert DateTime column to a proper date-time object
+rice$DateTime <- as.POSIXct(rice$DateTime, format="%m/%d/%Y %I:%M:%S %p")
+
+# 2. Create month and weekday objects
+rice$Month <- factor(format(rice$DateTime, "%m"), levels = sprintf("%02d", 1:12), ordered = TRUE)
+rice$Weekday <- factor(weekdays(rice$DateTime), levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"), ordered = TRUE)
+
+# 3. Convert temperature from Fahrenheit to Celsius
+rice$AirTempC <- (rice$AirTempF - 32) * 5 / 9  
+rice$Rain_cm <- rice$Rain_in * 2.54
+
+# 4. Remove unnecessary columns
+rice <- select(rice, -RecordID, -WindSpeed_mph, -RelHumidity, -AirTempF, -PH_mv, -Rain_in, -Depth_ft)
+
+# 5. Reorder the columns
+rice <- rice %>% select(DateTime, Month, Weekday, everything())
+
+# Create a Weekday/Weekend column
+rice$WeekdayWeekend <- ifelse(rice$Weekday %in% c("Saturday", "Sunday"), "Weekend", "Weekday")
+rice$WeekdayWeekend <- factor(rice$WeekdayWeekend, levels = c("Weekday", "Weekend"))
+
+# Create a column for lunar phase using suncalc
+rice$LunarPhase <- getMoonIllumination(rice$DateTime)$phase
+
+# Categorize into the four primary lunar phases
+rice$LunarPhase <- cut(rice$LunarPhase, 
+                       breaks = c(-Inf, 0.25, 0.5, 0.75, Inf), 
+                       labels = c("New Moon", "First Quarter", "Full Moon", "Last Quarter"))
+
+# Create a random TideDirection column
+rice$TideDirection <- ifelse(runif(nrow(rice)) > 0.5, "Incoming", "Outgoing")
+rice$TideDirection <- factor(rice$TideDirection, levels = c("Incoming", "Outgoing"))
+
+# View the final dataset
+view(rice)
+```
+
