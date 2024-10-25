@@ -1,0 +1,75 @@
+---
+title: "factor"
+format: html
+editor: visual
+---
+
+```{r}
+
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+
+url <- "https://docs.google.com/spreadsheets/d/1Mk1YGH9LqjF7drJE-td1G_JkdADOU0eMlrP01WFBT8s/pub?gid=0&single=true&output=csv"
+
+# Read in the data
+rice <- read_csv("RiceRiversCenter_PierWaterQualityData_2014 - Data.csv", show_col_types = FALSE)
+
+# 1. Make Date object
+rice$DateTime <- as.POSIXct(rice$DateTime, format="%m/%d/%Y %I:%M:%S %p")
+
+# 2. Create month and weekday objects
+ rice$Month <- format(rice$DateTime, "%m")
+    rice$Day <- format(rice$DateTime, "%d")
+    rice$Weekday <- weekdays(rice$DateTime)
+    
+ rice$Month <- factor(rice$Month, levels = sprintf("%02d", 1:12), ordered = TRUE)
+ 
+rice$Weekday <- factor(rice$Weekday, 
+                       levels = c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"), 
+                       ordered = TRUE)
+
+
+# 3. Convert Fahrenheit to Celsius
+rice$AirTempC <- (rice$AirTempF - 32) * 5 / 9  
+
+
+ rice$Rain_cm <- rice$Rain_in * 2.54
+
+# 4. Get rid of extra data
+rice <- select(rice, -RecordID, -WindSpeed_mph, -RelHumidity, -AirTempF, -PH_mv, -Rain_in, -Depth_ft)  # Remove unnecessary columns
+
+# 5. Reorder the columns
+rice <- rice %>% select(DateTime, Month, Weekday, everything())  # Reorder columns
+
+# Reorder Weekday to start with Monday
+rice$Weekday <- factor(rice$Weekday, 
+                       levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"), 
+                       ordered = TRUE)
+
+
+# Create a Weekday/Weekend column
+rice$WeekdayWeekend <- ifelse(rice$Weekday %in% c("Saturday", "Sunday"), "Weekend", "Weekday")
+rice$WeekdayWeekend <- factor(rice$WeekdayWeekend, levels = c("Weekday", "Weekend"))
+
+# Create a column based on the *four primary lunar phases* for the data collected.
+
+install.packages("suncalc")
+
+library(suncalc)
+
+rice$LunarPhase <- getMoonIllumination(rice$DateTime)$phase
+
+# Categorize into the four primary lunar phases
+rice$LunarPhase <- cut(rice$LunarPhase, 
+                       breaks = c(-Inf, 0.25, 0.5, 0.75, Inf), 
+                       labels = c("New Moon", "First Quarter", "Full Moon", "Last Quarter"))
+
+
+
+# Create a column that indicates whether the tide is coming in (Incoming) or going out (Outgoing).
+rice$TideDirection <- ifelse(runif(nrow(rice)) > 0.5, "Incoming", "Outgoing")
+rice$TideDirection <- factor(rice$TideDirection, levels = c("Incoming", "Outgoing"))
+
+view(rice) 
+```
