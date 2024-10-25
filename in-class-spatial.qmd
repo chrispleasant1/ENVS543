@@ -19,7 +19,8 @@ This homework is a bit quick but is designed to make sure that:
 ## Spatial Libraries
 
 The following code defines the set of necessary libraries for the next few weeks and then figures out which (potential) subset you need to install. It then installs them all in one call.  It will not load them into your session, you'll have to do that later in your code chunks.
-
+ 
+ 
 
 ```{r}
 #| eval: false 
