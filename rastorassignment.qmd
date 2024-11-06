@@ -1,0 +1,74 @@
+---
+title: rastorassignment
+format: html
+editor: visual
+---
+
+
+
+```{r}
+# Load necessary libraries
+library(raster)
+library(sf)
+library(tidyverse)
+
+# Load raster data
+raster_url <- "https://github.com/DyerlabTeaching/Raster-Data/raw/main/data/alt_22.tif"
+elevation_raster <- raster(raster_url)
+
+# Load point data and convert to spatial data frame
+beetle_url <- "https://raw.githubusercontent.com/DyerlabTeaching/Raster-Data/main/data/AraptusDispersalBias.csv"
+beetles <- read_csv(beetle_url) %>%
+  st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326)
+
+# Define bounding box based on the area of interest (Cape region)
+cape_bbox <- c(-116, -109, 22, 30) 
+cape_extent <- extent(cape_bbox)
+cropped_raster <- crop(elevation_raster, cape_extent)  # Use static bounding box
+
+# Filter for sites south of Site #75 (Cape region)
+cape_points <- beetles %>% filter(Site >= 75)
+
+# Plot the raster and add points with size based on MFRatio
+plot(cropped_raster, xlab = "Longitude", ylab = "Latitude")
+plot(cape_points, add = TRUE, col = "red", pch = 16, cex = cape_points$MFRatio / max(cape_points$MFRatio))
+text(st_coordinates(cape_points), labels = cape_points$Site, pos = 3)
+
+# Classify points by state based on latitude boundary at 28° latitude
+beetles <- beetles %>%
+  mutate(State = ifelse(st_coordinates(beetles)[, 2] > 28, "Baja California Norte", "Baja California Sur"))
+
+# Calculate average M/F ratio by state
+state_avg_sex_ratio <- beetles %>%
+  group_by(State) %>%
+  summarize(AverageMFRatio = mean(MFRatio, na.rm = TRUE))
+
+# Bar plot for average M/F ratio by state
+barplot(state_avg_sex_ratio$AverageMFRatio, 
+        names.arg = state_avg_sex_ratio$State, 
+        main = "Average M/F Ratio by State", 
+        ylab = "Average M/F Ratio", 
+        col = c("lightblue", "lightgreen"))
+
+# Extract elevation values at each sampling location
+elevation_values <- raster::extract(cropped_raster, beetles)
+beetles <- beetles %>% mutate(Elevation = elevation_values)
+
+# Correlation test between MFRatio and Elevation
+cor_test <- cor.test(beetles$MFRatio, beetles$Elevation, method = "pearson")
+
+# Scatter plot of M/F Ratio vs Elevation
+plot(beetles$Elevation, beetles$MFRatio, main = "M/F Ratio vs. Elevation", xlab = "Elevation", ylab = "M/F Ratio", pch = 19)
+abline(lm(MFRatio ~ Elevation, data = beetles), col = "blue")
+
+# Print correlation test results
+cat("The correlation between M/F ratio and elevation was r =", round(cor_test$estimate, 2), ", p =", cor_test$p.value, "\n")
+
+
+```
+
+
+
+
+
+
