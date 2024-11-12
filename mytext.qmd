@@ -1,0 +1,130 @@
+---
+title: "Text"
+author: "Chris Pleasant"
+format: html
+editor: visual
+---
+
+## 
+
+```{r}
+file_path <- "/Users/chrispleasant/Desktop/ENVS543/LifeSciencesCurriculum.txt"
+
+
+# Load libraries
+library(ggplot2)
+library(dplyr)
+library(wordcloud)
+library(tidyr)
+
+# Read the text data
+
+data <- readLines(file_path)
+
+# Extract course information using regex
+course_pattern <- "([A-Z]{4}) (\\d{3})\\. (.+?)\\. (\\d+-?\\d* Hours)"
+matches <- regmatches(data, gregexpr(course_pattern, data, perl = TRUE))
+courses <- unlist(matches)
+
+# Convert extracted data to a data frame
+course_data <- data.frame(
+  Program = sub(course_pattern, "\\1", courses),
+  Level = sub(course_pattern, "\\2", courses),
+  Title = sub(course_pattern, "\\3", courses),
+  Credits = sub(course_pattern, "\\4", courses),
+  stringsAsFactors = FALSE
+)
+
+# Add a new column for course level classification (e.g., 100, 200)
+course_data$Course_Level <- paste0(substr(course_data$Level, 1, 1), "00")
+
+# Clean Credits column to numeric
+course_data$Credits <- as.numeric(sub(" Hours", "", course_data$Credits))
+
+# Ensure all levels (100, 200, etc.) exist for each program
+all_levels <- c("100", "200", "300", "400")
+course_data <- course_data %>%
+  complete(Program, Course_Level = all_levels, fill = list(Credits = 0))
+
+# Group data for plotting
+course_counts <- course_data %>%
+  group_by(Program, Course_Level) %>%
+  summarize(Count = n(), .groups = "drop") %>%
+  pivot_wider(names_from = Course_Level, values_from = Count, values_fill = list(Count = 0)) %>%
+  mutate(across(c("100", "200", "300", "400"), ~ replace_na(., 0)))
+
+
+
+# Plotting the number of courses grouped by program and level
+# Ensure all levels (100, 200, etc.) exist for each program
+all_levels <- c("100", "200", "300", "400")
+course_data <- course_data %>%
+  filter(!is.na(Program) & Program != "") %>%  # Remove empty or NA programs
+  filter(!is.na(Course_Level) & Course_Level != "") %>%  # Remove empty levels
+  complete(Program, Course_Level = all_levels, fill = list(Credits = 0, Level = ""))
+
+# Group data for plotting
+course_counts <- course_data %>%
+  group_by(Program, Course_Level) %>%
+  summarize(Count = n(), .groups = "drop") %>%
+  pivot_wider(names_from = Course_Level, values_from = Count, values_fill = list(Count = 0))
+
+# Convert wide data to long format for ggplot
+course_counts_long <- course_counts %>%
+  pivot_longer(cols = starts_with("1"):starts_with("4"),  # Select the 100–400 columns
+               names_to = "Course_Level", 
+               values_to = "Count")
+
+# Plotting the number of courses grouped by program and level
+ggplot(course_counts_long, aes(x = Program, y = Count, fill = Course_Level)) +
+  geom_bar(stat = "identity", position = "stack") +  
+  labs(title = "Number of Courses at Each\n Level Grouped by Program",
+       x = "Program",
+       y = "Number of Courses") +
+  scale_fill_manual(
+    values = c(
+      "100" = "red",
+      "200" = "darkgreen",  
+      "300" = "black",      
+      "400" = "gray"        
+    ),
+    name = "Course Level"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(
+      family = "Times New Roman", 
+      hjust = 0.5
+    ),
+    axis.title.x = element_text(
+      family = "Times New Roman"
+    ),
+    axis.title.y = element_text(
+      family = "Times New Roman"
+    ),
+    legend.title = element_text(
+      family = "Times New Roman"
+    ),
+    legend.text = element_text(
+      family = "Times New Roman"
+    )
+  )
+
+# Generate a word cloud for course titles
+wordcloud(
+  words = unlist(strsplit(paste(course_data$Title, collapse = " "), "\\s+")),
+  scale = c(3, 0.5),
+  random.order = FALSE,
+  colors = brewer.pal(8, "Dark2")
+)
+
+```
+
+Question 2 
+
+```{r}
+
+str
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
