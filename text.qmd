@@ -10,6 +10,7 @@ editor: visual
 ```{r}
 file_path <- "/Users/chrispleasant/Desktop/ENVS543/LifeSciencesCurriculum.txt"
 
+
 # Load libraries
 library(ggplot2)
 library(dplyr)
