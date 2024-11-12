@@ -58,16 +58,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="mytext_files/libs/clipboard/clipboard.min.js"></script>
-<script src="mytext_files/libs/quarto-html/quarto.js"></script>
-<script src="mytext_files/libs/quarto-html/popper.min.js"></script>
-<script src="mytext_files/libs/quarto-html/tippy.umd.min.js"></script>
-<script src="mytext_files/libs/quarto-html/anchor.min.js"></script>
-<link href="mytext_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="mytext_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="mytext_files/libs/bootstrap/bootstrap.min.js"></script>
-<link href="mytext_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="mytext_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="myfavtext_files/libs/clipboard/clipboard.min.js"></script>
+<script src="myfavtext_files/libs/quarto-html/quarto.js"></script>
+<script src="myfavtext_files/libs/quarto-html/popper.min.js"></script>
+<script src="myfavtext_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="myfavtext_files/libs/quarto-html/anchor.min.js"></script>
+<link href="myfavtext_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="myfavtext_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="myfavtext_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="myfavtext_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="myfavtext_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
 
 </head>
@@ -233,22 +233,46 @@ Attaching package: 'dplyr'</code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="mytext_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="myfavtext_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>Question 2</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>str</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate a word cloud for course titles</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">wordcloud</span>(</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">words =</span> <span class="fu">unlist</span>(<span class="fu">strsplit</span>(<span class="fu">paste</span>(course_data<span class="sc">$</span>Title, <span class="at">collapse =</span> <span class="st">" "</span>), <span class="st">"</span><span class="sc">\\</span><span class="st">s+"</span>)),</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">scale =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="fl">0.5</span>),</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">random.order =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">colors =</span> <span class="fu">brewer.pal</span>(<span class="dv">8</span>, <span class="st">"Dark2"</span>)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required namespace: tm</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in tm_map.SimpleCorpus(corpus, tm::removePunctuation): transformation
+drops documents</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in tm_map.SimpleCorpus(corpus, function(x) tm::removeWords(x,
+tm::stopwords())): transformation drops documents</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="myfavtext_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>str</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>function (object, ...) 
 UseMethod("str")
-&lt;bytecode: 0x13b2193d0&gt;
+&lt;bytecode: 0x12bb9cdd0&gt;
 &lt;environment: namespace:utils&gt;</code></pre>
 </div>
 </div>
-<p>The <code>echo: false</code> option disables the printing of code (only output is displayed).</p>
 </section>
 
 </main>

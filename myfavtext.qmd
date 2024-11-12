@@ -116,8 +116,14 @@ ggplot(course_counts_long, aes(x = Program, y = Count, fill = Course_Level)) +
 Question 2 
 
 ```{r}
-
+# Generate a word cloud for course titles
+wordcloud(
+  words = unlist(strsplit(paste(course_data$Title, collapse = " "), "\\s+")),
+  scale = c(3, 0.5),
+  random.order = FALSE,
+  colors = brewer.pal(8, "Dark2")
+)
 str
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+
