@@ -1,12 +1,12 @@
 ---
-title: "Untitled"
+title: "correlation"
 format: html
 editor: visual
 ---
 
 ```{r}
 
-# Load necessary libraries
+# Libraries
 library(readr)
 library(dplyr)
 library(GGally)
@@ -14,103 +14,81 @@ library(ggplot2)
 library(gridExtra)
 library(lubridate)
 
-# Load the dataset
+# Load data
 rice <- read_csv("RiceRiversCenter_PierWaterQualityData_2014 - Data.csv", show_col_types = FALSE)
-
-# Convert DateTime column to Date format
 rice$DateTime <- as.POSIXct(rice$DateTime, format = "%m/%d/%Y %I:%M:%S %p")
 
-### Deliverable 1: Plot Atmospheric Data with ggpairs() ###
-# Filter data for the specified date range
+# Deliverable 1: Pairwise plot
 filtered_data <- rice %>%
   filter(month(DateTime) == 2 & day(DateTime) >= 10 & day(DateTime) <= 15) %>%
   select(AirTempF, RelHumidity, BP_HG, Rain_in)
-
-# Create a pairwise plot
 ggpairs(filtered_data) +
   theme_classic() + 
-  ggtitle("Atmospheric Data from Rice Rivers Center (Feb 10 to Feb 15, 2014)")
+  ggtitle("Atmospheric Data (Feb 10-15, 2014)")
 
-### Deliverable 2: Identify Strongest Correlation and Confidence Interval ###
-# Compute the correlation matrix
+# Deliverable 2: Strongest correlation
 cor_matrix <- cor(filtered_data, use = "complete.obs", method = "pearson")
-
-# Set the lower triangle (including diagonal) to NA to avoid duplicate pairs
 cor_matrix[lower.tri(cor_matrix, diag = TRUE)] <- NA
-
-# Find the strongest correlation
 max_corr_value <- max(abs(cor_matrix), na.rm = TRUE)
 strongest_pair_index <- which(abs(cor_matrix) == max_corr_value, arr.ind = TRUE)
 strongest_var1 <- colnames(filtered_data)[strongest_pair_index[1, 1]]
 strongest_var2 <- colnames(filtered_data)[strongest_pair_index[1, 2]]
 
-# Calculate 95% confidence interval using Fisher's Z transformation
+# Fisher's Z transformation for 95% CI
 z_value <- 0.5 * log((1 + max_corr_value) / (1 - max_corr_value))
-n <- nrow(filtered_data)  # Sample size
+n <- nrow(filtered_data)
 se_z <- 1 / sqrt(n - 3)
 z_ci_lower <- z_value - 1.96 * se_z
 z_ci_upper <- z_value + 1.96 * se_z
 corr_ci_lower <- (exp(2 * z_ci_lower) - 1) / (exp(2 * z_ci_lower) + 1)
 corr_ci_upper <- (exp(2 * z_ci_upper) - 1) / (exp(2 * z_ci_upper) + 1)
 
-print(paste("Strongest correlation is between", strongest_var1, "and", strongest_var2, 
-            "with a correlation of", round(max_corr_value, 3)))
-print(paste("95% Confidence Interval:", round(corr_ci_lower, 3), "to", round(corr_ci_upper, 3)))
+print(paste("Strongest correlation:", strongest_var1, "and", strongest_var2, 
+            "with r =", round(max_corr_value, 3)))
+print(paste("95% CI:", round(corr_ci_lower, 3), "to", round(corr_ci_upper, 3)))
 
-### Deliverable 3: Normality Assessment ###
-# Subset first 40 observations for AirTempF and BP_HG
+# Deliverable 3: Normality test
 data_subset <- rice %>% slice(1:40) %>% select(AirTempF, BP_HG)
-
-# Shapiro-Wilk tests
 shapiro_air_temp <- shapiro.test(data_subset$AirTempF)
 shapiro_bp <- shapiro.test(data_subset$BP_HG)
-print("Shapiro-Wilk Test for Air Temperature:")
+print("Shapiro-Wilk Test Results:")
 print(shapiro_air_temp)
-
-print("Shapiro-Wilk Test for Barometric Pressure:")
 print(shapiro_bp)
 
-# Generate histograms and Q-Q plots with updated colors
+# Histograms and Q-Q plots
 hist1 <- ggplot(data_subset, aes(x = AirTempF)) +
   geom_histogram(binwidth = 0.8, fill = "coral", color = "black") +
-  labs(title = "Histogram of AirTempF", x = "Air Temperature (F)", y = "Frequency") +
+  labs(title = "Histogram: AirTempF", x = "Air Temp (F)", y = "Frequency") +
   theme_minimal()
 
 hist2 <- ggplot(data_subset, aes(x = BP_HG)) +
   geom_histogram(binwidth = 0.01, fill = "gold", color = "darkgoldenrod") +
-  labs(title = "Histogram of BP_HG", x = "Barometric Pressure (Hg)", y = "Frequency") +
+  labs(title = "Histogram: BP_HG", x = "Barometric Pressure (Hg)", y = "Frequency") +
   theme_minimal()
 
 qq1 <- ggplot(data_subset, aes(sample = AirTempF)) +
   geom_qq(color = "darkblue") +
   geom_qq_line(color = "orange") +
-  labs(title = "Q-Q plot for AirTempF") +
+  labs(title = "Q-Q Plot: AirTempF") +
   theme_minimal()
 
 qq2 <- ggplot(data_subset, aes(sample = BP_HG)) +
   geom_qq(color = "darkgreen") +
   geom_qq_line(color = "purple") +
-  labs(title = "Q-Q plot for BP_HG") +
+  labs(title = "Q-Q Plot: BP_HG") +
   theme_minimal()
 
 grid.arrange(hist1, hist2, qq1, qq2, ncol = 2)
 
-### Deliverable 4: Determine Correlation Statistic ###
-# Determine the most appropriate correlation statistic based on normality
+# Deliverable 4: Correlation statistic
 if (shapiro_air_temp$p.value > 0.05 & shapiro_bp$p.value > 0.05) {
-  # Use Pearson if both variables are normally distributed
   correlation_stat <- "Pearson"
 } else {
-  # Use Spearman if either variable is not normally distributed
   correlation_stat <- "Spearman"
 }
-print(paste("Most appropriate correlation statistic:", correlation_stat))
+print(paste("Appropriate correlation statistic:", correlation_stat))
 
-### Deliverable 5: Q-Q Plot Analysis ###
-# Observations and explanation will be based on the Q-Q plot generated above.
-
-### Deliverable 6: Permutation Test ###
-# Permutation test function
+# Deliverable 6: Permutation test
 set.seed(123)
 n_permutations <- 1000
 perm_correlations <- numeric(n_permutations)
@@ -121,12 +99,11 @@ for (i in 1:n_permutations) {
   perm_correlations[i] <- cor(data_subset$AirTempF, shuffled_BP_HG, method = "spearman")
 }
 
-# Permutation histogram with updated colors
 ggplot(data.frame(perm_correlations), aes(x = perm_correlations)) +
   geom_histogram(binwidth = diff(range(perm_correlations)) / 30, fill = "plum", color = "black") +
   geom_vline(aes(xintercept = observed_correlation), color = "red", size = 1.5) +
-  labs(title = "Permutation Distribution of Spearman's Correlation", 
-       x = "Spearman's Correlation", y = "Frequency") +
+  labs(title = "Permutation Test: Spearman Correlation", 
+       x = "Correlation Coefficients", y = "Frequency") +
   theme_minimal()
 
 print(paste("Observed Spearman correlation:", observed_correlation))
@@ -135,137 +112,7 @@ print(paste("Observed Spearman correlation:", observed_correlation))
 
 You can add options to executable code like this
 
-```{r}
-### This is an R script to compare a standard Regression Tree model with a Random Forest model.
-
-
-# Begin by opening R Studio and setting the working directory.
-
-
-# Next, install and load the R packages 'rpart', 'rpart.plot', and 'ggpmisc'.
-
-	install.packages('rpart')
-	install.packages('rpart.plot')
-	install.packages('ggpmisc')
-	
-    library(rpart)
-	library(rpart.plot)
-	library(ggpmisc)
-	
-	library(ggplot2)
-
-
-
-
-# Rebuild the Regression Tree the VA County level socioeconomic data.
-
-# Import the VA County level socioeconomic data.
-
-    VAdata <- read.csv("CountyData_VA.csv", header = T)
-
-
-# Use the 'rpart' function to build a Regression Tree of the % of county residents with a college degree.
-# Because % residents with college degree is a numerical/continuous response variable, set the 'method' parameter as 'anova'.
-
-    VAcollegeTree <- rpart(College_degree ~ Lack_HealthIns + Renter_Occ + Smokers + Physically_Inactive +
-	
-						   Severe_Housing_Problems + Food_Insecure + Rural,
-						 
-						   data = VAdata, method = 'anova')
-
-
-# Use the 'rpart.plot' function to view the Regression Tree.
-
-    rpart.plot(VAcollegeTree)
-
-
-# Add a new 'PredictedCollege' column to the [VAdata] data.
-# Populate the 'PredictedCollege' column with model-predicted values.
-# The predicted values will hopefully be similar to the observed values, but will never be identical.
-
-	VAdata$PredictedCollege <- predict(VAcollegeTree, newdata = VAdata)
-
-
-# Create a scatterplot of the OBSERVED vs. PREDICTED values to see how well the model performs.
-
-	CountyVA_CollegePlot <- ggplot(VAdata, aes(x = College_degree, y = PredictedCollege)) +
-	
-								 stat_poly_line() + stat_poly_eq() + geom_point()
-
-	CountyVA_CollegePlot
-
-
-####################################################################################################
-
-# Now we'll use the 'VAcollegeTree' Regression Tree model to predict % college degrees for new data.
-# Start by importing the same data, but for counties in CA & WI.
-
-    CA_WIdata <- read.csv("CountyData_CA_WI.csv", header = T)
-
-
-# Add a new 'PredictedCollege' column to the [CA_WIdata] data.
-# Populate the 'PredictedCollege' column with model-predicted (from the VA model) values.
-
-	CA_WIdata$PredictedCollege <- predict(VAcollegeTree, newdata = CA_WIdata)
-
-
-# Create a scatterplot of the OBSERVED vs. PREDICTED values to see how well the model performs for the new counties.
-
-	County_CA_WI_CollegePlot <- ggplot(CA_WIdata, aes(x = College_degree, y = PredictedCollege)) +
-	
-								 stat_poly_line() + stat_poly_eq() + geom_point()
-
-	County_CA_WI_CollegePlot
-
-
-
-####################################################################################################
-
-# Now let's model 'College_degree' using Random Forest.
-
-# Import a fresh copy of "CountyData_VA.csv".
-
-	VAdata <- read.csv("CountyData_VA.csv", header = T)
-
-
-# Build the Random Forest model using the same 7 predictor variables.
-  
-	VAcollegeRF <- randomForest(College_degree ~ Lack_HealthIns + Renter_Occ + Smokers + Physically_Inactive +
-	
-								Severe_Housing_Problems + Food_Insecure + Rural, data = VAdata)
-
-	VAcollegeRF
-
-
-# Create a scatterplot of OBSERVED vs. PREDICTED values to see how well the 'VAcollegeRF' model performs.
-
-	VAdata$Predict <- predict(VAcollegeRF, type = "response")
-
-	VAcollegeRFplot <- ggplot(VAdata, aes(x = College_degree, y = Predict)) +
-	
-							  stat_poly_line() + stat_poly_eq() + geom_point()
-
-	VAcollegeRFplot
-
-
-
-# Use the 'VAcollegeRF' Random Forest model to predict 'College_degree' for the independent 'CountyData_CA_WI.csv' data.
-
-    CA_WIdata <- read.csv("CountyData_CA_WI.csv", header = T)
-	
-	CA_WIdata$Predict <- predict(VAcollegeRF, newdata = CA_WIdata, type = "response")
-
-
-# Create a scatterplot of the OBSERVED vs. PREDICTED values to see how well the model performs for the new test data.
-
-	County_CA_WI_CollegePlotRF <- ggplot(CA_WIdata, aes(x = College_degree, y = Predict)) +
-	
-										 stat_poly_line() + stat_poly_eq() + geom_point()
-
-	County_CA_WI_CollegePlotRF
-
-
-
+```{}
 ```
 
 The `echo: false` option disables the printing of code (only output is displayed).
