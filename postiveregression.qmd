@@ -1,0 +1,103 @@
+---
+title: "Regression"
+author: "Chris Pleasant"
+format: html
+editor: visual
+---
+
+
+
+
+```{r setup, include=FALSE}
+ 
+library( tidyverse )
+library( nycflights13 )
+```
+
+
+```{r}
+# Load necessary libraries
+library(tidyverse)
+library(nycflights13)
+library(GGally)
+
+# Data Preparation
+# Filter flights data for JFK and ExpressJet airlines, and summarize departure delays
+flights %>%
+  filter(origin == "JFK", carrier == "EV") %>%
+  mutate(DateTime = paste(month, day, hour, sep = ".")) %>%
+  select(DateTime, `Departure Delay` = dep_delay, `Departure Time` = sched_dep_time) %>%
+  droplevels() -> df.jfk
+
+# Prepare weather data for JFK
+weather %>%
+  filter(origin == "JFK") %>%
+  mutate(DateTime = paste(month, day, hour, sep = ".")) %>%
+  select(-origin, -year, -month, -day, -hour, -time_hour) -> df.weather
+
+# Merge the datasets on DateTime
+merge(df.jfk, df.weather, by = "DateTime") %>%
+  select(-DateTime) -> df
+
+# Remove rows with missing values
+df_clean <- df %>% drop_na()
+
+# Exploratory Data Analysis
+# Pairwise plots for temperature, dewpoint, and humidity
+df_subset <- df_clean %>% select(dewp, temp, humid)
+ggpairs(df_subset) +
+  ggtitle("Pairwise Plot of Dewpoint, Temperature, and Humidity") +
+  theme(plot.title = element_text(hjust = 0.5, size = 14))
+
+# Linear Regression: Initial Model
+model1 <- lm(`Departure Delay` ~ temp + dewp + humid + wind_dir + 
+               wind_speed + wind_gust + precip + pressure + visib + `Departure Time`, 
+             data = df_clean)
+print(summary(model1))
+
+# Diagnostics for Initial Model
+dev.new(width = 10, height = 8) # Open a new plotting window with larger dimensions
+par(mfrow = c(2, 2), mar = c(4, 4, 2, 1)) # Set margins
+plot(model1) # Base R diagnostic plots
+par(mfrow = c(1, 1)) # Reset plotting layout
+
+# Feature Selection with Stepwise AIC
+step_model1 <- step(model1, direction = "both")
+print(summary(step_model1))
+
+# Model Comparison
+# Final predictors: temp, dewp, humid, wind_dir, visib, `Departure Time`
+final_model <- lm(`Departure Delay` ~ temp + dewp + humid + wind_dir + visib + `Departure Time`, 
+                  data = df_clean)
+print(summary(final_model))
+
+# Compare AIC of initial and final models
+cat("AIC for Initial Model:", AIC(model1), "\n")
+cat("AIC for Final Model:", AIC(final_model), "\n")
+
+# Visualization of Model Fit
+df_clean$yhat <- predict(final_model)
+df_clean$residuals <- residuals(final_model)
+
+# Predicted vs Observed
+ggplot(df_clean, aes(x = `Departure Delay`, y = yhat)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, color = "red") +
+  labs(title = "Predicted vs Observed", x = "Observed", y = "Predicted")
+
+# Residuals vs Predicted
+ggplot(df_clean, aes(x = yhat, y = residuals)) +
+  geom_point() +
+  geom_abline(slope = 0, intercept = 0, color = "red") +
+  labs(title = "Residuals vs Predicted", x = "Predicted", y = "Residuals")
+
+# Analysis of Individual Predictors
+predictors <- c("dewp", "humid", "temp")
+for (predictor in predictors) {
+  model <- lm(`Departure Delay` ~ get(predictor), data = df_clean)
+  cat("AIC for model with", predictor, ":", AIC(model), "\n")
+}
+
+```
+
+
