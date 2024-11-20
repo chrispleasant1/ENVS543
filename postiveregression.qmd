@@ -1,8 +1,14 @@
 ---
-title: "Regression"
+---
+title: "Regression Analysis"
 author: "Chris Pleasant"
-format: html
-editor: visual
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: cerulean
+    highlight: tango
+
 ---
 
 
