@@ -1,0 +1,68 @@
+---
+title: "ZMean"
+format: html
+editor: visual
+---
+
+```{r}
+# Load required libraries
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(broom)
+
+# Read the data
+diet_data <- read.csv("DietData.csv")
+
+# Add a new column for weight loss
+diet_data <- diet_data %>% mutate(Weight_Loss = pre.weight - weight6weeks)
+
+# Summary statistics
+print(summary(diet_data))
+
+# Visualization: Weight Loss by Diet
+ggplot(diet_data, aes(x = as.factor(Diet), y = Weight_Loss)) +
+  geom_boxplot(aes(fill = as.factor(Diet))) +
+  labs(title = "Weight Loss Distribution by Diet", x = "Diet", y = "Weight Loss (kg)") +
+  theme_minimal()
+
+# Visualization: Weight Loss by Gender
+ggplot(diet_data, aes(x = as.factor(gender), y = Weight_Loss)) +
+  geom_boxplot(aes(fill = as.factor(gender))) +
+  labs(title = "Weight Loss Distribution by Gender", x = "Gender (0 = Female, 1 = Male)", y = "Weight Loss (kg)") +
+  theme_minimal()
+
+# Mean weight loss by gender and diet
+mean_table <- diet_data %>%
+  group_by(Diet, gender) %>%
+  summarize(Mean_Weight_Loss = mean(Weight_Loss, na.rm = TRUE))
+print(mean_table)
+
+# ANOVA for Diet
+fit_diet <- aov(Weight_Loss ~ as.factor(Diet), data = diet_data)
+summary(fit_diet)
+
+# Post-hoc test: Tukey's HSD
+tukey <- TukeyHSD(fit_diet)
+print(tukey)
+
+# R-squared for Diet
+diet_anova <- tidy(fit_diet)
+ss_total <- sum(diet_anova$sumsq)
+r_squared_diet <- diet_anova$sumsq[1] / ss_total
+print(paste("R-squared for Diet:", r_squared_diet))
+
+# ANOVA for Gender
+fit_gender <- aov(Weight_Loss ~ as.factor(gender), data = diet_data)
+summary(fit_gender)
+
+# Two-way ANOVA for Diet and Gender Interaction
+fit_interaction <- aov(Weight_Loss ~ as.factor(Diet) * as.factor(gender), data = diet_data)
+summary(fit_interaction)
+
+# R-squared for Interaction Model
+interaction_anova <- tidy(fit_interaction)
+r_squared_interaction <- sum(interaction_anova$sumsq[1:3]) / sum(interaction_anova$sumsq)
+print(paste("R-squared for Interaction Model:", r_squared_interaction))
+
+```
