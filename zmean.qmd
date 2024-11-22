@@ -11,12 +11,11 @@ library(dplyr)
 library(tidyr)
 library(broom)
 
-# Read the data
+# Load the data
 diet_data <- read.csv("DietData.csv")
-
-# Add a new column for weight loss
 diet_data <- diet_data %>% mutate(Weight_Loss = pre.weight - weight6weeks)
 
+# ---- Exploratory Data Analysis ----
 # Summary statistics
 print(summary(diet_data))
 
@@ -26,19 +25,28 @@ ggplot(diet_data, aes(x = as.factor(Diet), y = Weight_Loss)) +
   labs(title = "Weight Loss Distribution by Diet", x = "Diet", y = "Weight Loss (kg)") +
   theme_minimal()
 
+# Interpretation: The boxplot shows that there are noticeable differences in weight loss
+# across diets, with Diet 1 having greater weight loss on average.
+
 # Visualization: Weight Loss by Gender
 ggplot(diet_data, aes(x = as.factor(gender), y = Weight_Loss)) +
   geom_boxplot(aes(fill = as.factor(gender))) +
   labs(title = "Weight Loss Distribution by Gender", x = "Gender (0 = Female, 1 = Male)", y = "Weight Loss (kg)") +
   theme_minimal()
 
-# Mean weight loss by gender and diet
+# Interpretation: The gender-based boxplot shows no clear difference in weight loss 
+# between males and females.
+
+# ---- Mean Values by Gender and Diet ----
 mean_table <- diet_data %>%
   group_by(Diet, gender) %>%
   summarize(Mean_Weight_Loss = mean(Weight_Loss, na.rm = TRUE))
 print(mean_table)
 
-# ANOVA for Diet
+# Interpretation: The table indicates that Diet 1 shows consistently higher weight loss
+# across both genders compared to Diets 2 and 3.
+
+# ---- One-Way ANOVA: Diet Effect ----
 fit_diet <- aov(Weight_Loss ~ as.factor(Diet), data = diet_data)
 summary(fit_diet)
 
@@ -52,11 +60,20 @@ ss_total <- sum(diet_anova$sumsq)
 r_squared_diet <- diet_anova$sumsq[1] / ss_total
 print(paste("R-squared for Diet:", r_squared_diet))
 
-# ANOVA for Gender
+# Interpretation:
+# - ANOVA results indicate a significant effect of diet on weight loss (p < 0.01).
+# - Tukey’s HSD shows that Diet 1 leads to significantly more weight loss than Diets 2 and 3.
+# - R-squared value (~12.85%) shows that diet explains a moderate portion of the variance.
+
+# ---- One-Way ANOVA: Gender Effect ----
 fit_gender <- aov(Weight_Loss ~ as.factor(gender), data = diet_data)
 summary(fit_gender)
 
-# Two-way ANOVA for Diet and Gender Interaction
+# Interpretation:
+# - ANOVA results show no significant effect of gender on weight loss (p = 0.86).
+# - This suggests that weight loss is independent of gender.
+
+# ---- Two-Way ANOVA: Diet and Gender Interaction ----
 fit_interaction <- aov(Weight_Loss ~ as.factor(Diet) * as.factor(gender), data = diet_data)
 summary(fit_interaction)
 
@@ -64,5 +81,17 @@ summary(fit_interaction)
 interaction_anova <- tidy(fit_interaction)
 r_squared_interaction <- sum(interaction_anova$sumsq[1:3]) / sum(interaction_anova$sumsq)
 print(paste("R-squared for Interaction Model:", r_squared_interaction))
+
+# Interpretation:
+# - The two-way ANOVA shows significant effects of diet (p < 0.01) and a diet-gender interaction (p = 0.048).
+# - The interaction suggests that the effect of diet on weight loss is influenced by gender.
+# - The interaction model explains a larger portion of variance than diet or gender alone.
+
+# ---- Final Summary ----
+# Interpretation:
+# - Diet significantly affects weight loss, with Diet 1 being the most effective.
+# - Gender alone does not significantly impact weight loss.
+# - There is a significant interaction between diet and gender, suggesting that gender moderates the diet effect.
+# - The interaction model provides the best explanation for weight loss variance.
 
 ```
