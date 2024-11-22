@@ -14,8 +14,8 @@ library(broom)
 diet_data <- read.csv("DietData.csv")
 diet_data <- diet_data %>% mutate(Weight_Loss = pre.weight - weight6weeks)
 
-# ---- Exploratory Data Analysis ----
-# Let's start by looking at the data to get a sense of what’s going on.
+# Exploratory Data Analysis 
+
 print(summary(diet_data))
 
 # Visualization: Weight Loss by Diet
@@ -37,7 +37,7 @@ ggplot(diet_data, aes(x = as.factor(gender), y = Weight_Loss)) +
 # Interpretation: For gender, the boxplot shows that men and women lost similar amounts of weight. 
 # There doesn’t seem to be a big difference, but we’ll confirm this with statistical tests.
 
-# ---- Mean Values by Gender and Diet ----
+#  Mean Values by Gender and Diet
 mean_table <- diet_data %>%
   group_by(Diet, gender) %>%
   summarize(Mean_Weight_Loss = mean(Weight_Loss, na.rm = TRUE))
@@ -47,7 +47,7 @@ print(mean_table)
 # Diet 1 consistently shows higher weight loss for both men and women, while Diets 2 and 3 are 
 # pretty close to each other.
 
-# ---- One-Way ANOVA: Diet Effect ----
+# One-Way ANOVA: Diet Effect
 fit_diet <- aov(Weight_Loss ~ as.factor(Diet), data = diet_data)
 summary(fit_diet)
 
@@ -66,14 +66,14 @@ print(paste("R-squared for Diet:", r_squared_diet))
 # between Diets 2 and 3. The R-squared value (~12.85%) means that diet explains about 13% of the variation 
 # in weight loss, which is decent.
 
-# ---- One-Way ANOVA: Gender Effect ----
+# One-Way ANOVA: Gender Effect
 fit_gender <- aov(Weight_Loss ~ as.factor(gender), data = diet_data)
 summary(fit_gender)
 
 # Interpretation: When I look at gender, the ANOVA shows that it doesn’t have a significant effect on 
 # weight loss (p = 0.86). So, weight loss seems to be pretty similar for men and women regardless of diet.
 
-# ---- Two-Way ANOVA: Diet and Gender Interaction ----
+# Two-Way ANOVA: Diet and Gender Interaction
 fit_interaction <- aov(Weight_Loss ~ as.factor(Diet) * as.factor(gender), data = diet_data)
 summary(fit_interaction)
 
@@ -87,7 +87,7 @@ print(paste("R-squared for Interaction Model:", r_squared_interaction))
 # someone loses on a diet might depend on whether they’re male or female. The interaction model explains 
 # more variation than just diet or gender alone, so it’s the best model overall.
 
-# ---- Final Summary ----
+#Final Summary
 # Overall, I found that diet has a big impact on weight loss, with Diet 1 being the most effective. 
 # Gender by itself doesn’t seem to matter much, but when I look at the interaction between diet and gender, 
 # it becomes clear that gender affects how well the diets work. The interaction model is the best at explaining 
