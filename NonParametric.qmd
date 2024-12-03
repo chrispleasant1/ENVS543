@@ -8,7 +8,7 @@ editor: visual
 ```{r}
 library(ggplot2)
 library(dplyr)
-
+ 
 # Question 1: 
 total_patients <- 19
 side_effect_patients <- 3
