@@ -1,0 +1,131 @@
+---
+title: "543 Final"
+format: html
+editor: visual
+---
+
+```{r}
+# Load necessary libraries
+library(dplyr)
+library(ggplot2)
+library(terra)
+library(knitr)
+library(kableExtra)
+
+# Load the data
+locations <- read.csv("Arapat_Locations.csv")
+samples <- read.csv("Arapat_Samples.csv")
+suitability_now <- rast("suitability_now.tif")
+suitability_lgm <- rast("suitability_lgm.asc")
+
+# Calculate sex ratios per site and plant
+sex_ratios <- samples %>%
+  group_by(Site, Plant) %>%
+  summarize(
+    male_count = sum(Sex == "Male", na.rm = TRUE),
+    female_count = sum(Sex == "Female", na.rm = TRUE),
+    sex_ratio = male_count / female_count
+  )
+
+# View the summarized sex ratios
+kable(sex_ratios, caption = "Sex Ratios by Site and Plant") %>%
+  kable_styling()
+```
+
+# Question 2: Which sites have sex ratios that deviate from equal proportions of males and females at the site?
+```{r}
+# Aggregate sex ratios to the site level
+site_sex_ratios <- sex_ratios %>%
+  group_by(Site) %>%
+  summarize(
+    total_male = sum(male_count),
+    total_female = sum(female_count),
+    site_sex_ratio = total_male / total_female
+  ) %>%
+  mutate(deviation = abs(site_sex_ratio - 1)) %>%
+  filter(deviation > 0.1)  # Threshold for significant deviation
+
+# View sites with significant deviation
+kable(site_sex_ratios, caption = "Sites with Significant Sex Ratio Deviations") %>%
+  kable_styling()
+```
+
+# Question 3: Is there a functional relationship between habitat suitability and sex ratio?
+```{r}
+# Extract habitat suitability values
+locations <- locations %>%
+  mutate(Suitability = extract(suitability_now, cbind(Longitude, Latitude))[, 1])
+
+# Combine site-level sex ratios with suitability
+site_sex_ratios <- site_sex_ratios %>%
+  left_join(locations, by = "Site")
+
+# Fit a linear model
+model1 <- lm(site_sex_ratio ~ Suitability, data = site_sex_ratios)
+
+# Plot the relationship
+ggplot(site_sex_ratios, aes(x = Suitability, y = site_sex_ratio)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(
+    title = "Sex Ratio vs Habitat Suitability",
+    x = "Habitat Suitability",
+    y = "Sex Ratio"
+  )
+
+# Summary of the model
+summary(model1)
+```
+
+# Question 4: Does the inclusion of Phenotype A and Phenotype B improve the relationship?
+```{r}
+# Add phenotype data
+phenotype_data <- samples %>%
+  group_by(Site) %>%
+  summarize(
+    mean_phenotype_a = mean(PhenotypeA, na.rm = TRUE),
+    mean_phenotype_b = mean(PhenotypeB, na.rm = TRUE)
+  )
+
+# Merge with site_sex_ratios
+enhanced_data <- site_sex_ratios %>%
+  left_join(phenotype_data, by = "Site")
+
+# Fit the enhanced model
+model2 <- lm(site_sex_ratio ~ Suitability + mean_phenotype_a + mean_phenotype_b, data = enhanced_data)
+
+# Compare models
+summary(model2)
+```
+
+# Question 5: Has the suitability changed since the last glacial maximum?
+```{r}
+# Extract LGM suitability values
+locations <- locations %>%
+  mutate(Suitability_LGM = extract(suitability_lgm, cbind(Longitude, Latitude))[, 1])
+
+# Calculate the change in suitability
+locations <- locations %>%
+  mutate(Suitability_Change = Suitability - Suitability_LGM)
+
+# View the suitability changes
+kable(locations, caption = "Suitability Change Since Last Glacial Maximum") %>%
+  kable_styling()
+```
+
+# Question 6: Predict the historical sex ratio based on LGM suitability and analyze trends
+```{r}
+# Predict historical sex ratios using model1
+locations <- locations %>%
+  mutate(Historical_Sex_Ratio = predict(model1, newdata = locations))
+
+# Analyze trends
+ggplot(locations, aes(x = Suitability_LGM, y = Historical_Sex_Ratio)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(
+    title = "Historical Sex Ratio vs LGM Suitability",
+    x = "LGM Suitability",
+    y = "Predicted Historical Sex Ratio"
+  )
+```
