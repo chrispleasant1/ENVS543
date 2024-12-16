@@ -49,7 +49,7 @@ site_sex_ratios <- sex_ratios %>%
 kable(site_sex_ratios, caption = "Sites with Significant Sex Ratio Deviations") %>%
   kable_styling()
 ```
-
+ 
 # Question 3: Is there a functional relationship between habitat suitability and sex ratio?
 ```{r}
 # Extract habitat suitability values
