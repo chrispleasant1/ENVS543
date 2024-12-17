@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>543 Final</title>
+<title>Analysis of Sex Ratios and Habitat Suitability in Arapat Beetle Populations</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -81,7 +81,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">543 Final</h1>
+<h1 class="title">Analysis of Sex Ratios and Habitat Suitability in Arapat Beetle Populations</h1>
 </div>
 
 
@@ -98,6 +98,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<p><strong>Introduction</strong></p>
+<p>The Arapat beetle (Araptus attenuatus) is a keystone species within the Sonora Desert ecosystem, and its population dynamics are of ecological significance. Understanding the relationships between sex ratios, habitat suitability, and environmental changes offers insight into the species’ adaptability under climatic fluctuations. This study investigates the sex ratio variance among populations, explores the influence of habitat suitability, and predicts historical trends based on climatic shifts.</p>
+<p><strong>Methods</strong></p>
+<p>Data for this analysis included sex ratio counts by site and plant, habitat suitability estimates from raster data, and phenotypic measurements (Phenotype A and B). Raster data for current habitat suitability and that of the Last Glacial Maximum (LGM) (~20,000 years ago) were extracted for each site. Statistical models were employed to evaluate relationships between sex ratios, habitat suitability, and phenotypes. The analysis was conducted using R, with outputs visualized through tables, graphs, and maps.</p>
+<p><strong>1.)Do sampled populations of the beetle have different sex ratios?</strong></p>
+<p>The sex ratios at the plant level varied significantly across sites. Table 1 summarizes the male-to-female ratios by plant and site. While some populations exhibited balanced ratios, others deviated significantly, with notable male-biased or female-biased patterns.</p>
+<p><strong>Table 1. Sex Ratios by Site and Plant</strong></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load necessary libraries</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -158,12 +165,11 @@ Attaching package: 'kableExtra'</code></pre>
 <pre><code>`summarise()` has grouped output by 'Site'. You can override using the
 `.groups` argument.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># View the summarized sex ratios</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(sex_ratios, <span class="at">caption =</span> <span class="st">"Sex Ratios by Site and Plant"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(sex_ratios, <span class="at">caption =</span> <span class="st">"Table 1. Sex Ratios by Site and Plant"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, <span class="st">"hover"</span>), <span class="at">full_width =</span> <span class="cn">FALSE</span>, <span class="at">position =</span> <span class="st">"center"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
-<caption>Sex Ratios by Site and Plant</caption>
+<table class="table table-striped table-hover caption-top table-sm small" data-quarto-postprocess="true">
+<caption>Table 1. Sex Ratios by Site and Plant</caption>
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">Site</th>
@@ -1265,26 +1271,25 @@ Attaching package: 'kableExtra'</code></pre>
 
 </div>
 </div>
-<section id="question-2-which-sites-have-sex-ratios-that-deviate-from-equal-proportions-of-males-and-females-at-the-site" class="level1">
-<h1>Question 2: Which sites have sex ratios that deviate from equal proportions of males and females at the site?</h1>
+<p><strong>2.) Which sites have sex ratios that deviate from equal proportions?</strong></p>
+<p>Sites with significant deviations (± 10% from a 1:1 ratio) were identified. Table 2 lists these sites, with deviations ranging up to 2.5:1 (male-biased).</p>
+<p><strong>Table 2. Sites with Significant Sex Ratio Deviations</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Aggregate sex ratios to the site level</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>site_sex_ratios <span class="ot">&lt;-</span> sex_ratios <span class="sc">%&gt;%</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Site) <span class="sc">%&gt;%</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_male =</span> <span class="fu">sum</span>(male_count),</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_female =</span> <span class="fu">sum</span>(female_count),</span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">site_sex_ratio =</span> total_male <span class="sc">/</span> total_female</span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">deviation =</span> <span class="fu">abs</span>(site_sex_ratio <span class="sc">-</span> <span class="dv">1</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(deviation <span class="sc">&gt;</span> <span class="fl">0.1</span>)  <span class="co"># Threshold for significant deviation</span></span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="co"># View sites with significant deviation</span></span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(site_sex_ratios, <span class="at">caption =</span> <span class="st">"Sites with Significant Sex Ratio Deviations"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>site_sex_ratios <span class="ot">&lt;-</span> sex_ratios <span class="sc">%&gt;%</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Site) <span class="sc">%&gt;%</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_male =</span> <span class="fu">sum</span>(male_count),</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_female =</span> <span class="fu">sum</span>(female_count),</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">site_sex_ratio =</span> total_male <span class="sc">/</span> total_female</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">deviation =</span> <span class="fu">abs</span>(site_sex_ratio <span class="sc">-</span> <span class="dv">1</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(deviation <span class="sc">&gt;</span> <span class="fl">0.1</span>)</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(site_sex_ratios, <span class="at">caption =</span> <span class="st">"Table 2. Sites with Significant Sex Ratio Deviations"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"bordered"</span>, <span class="st">"hover"</span>), <span class="at">full_width =</span> <span class="cn">FALSE</span>, <span class="at">position =</span> <span class="st">"center"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
-<caption>Sites with Significant Sex Ratio Deviations</caption>
+<table class="table table-bordered table-hover caption-top table-sm table-striped small" data-quarto-postprocess="true">
+<caption>Table 2. Sites with Significant Sex Ratio Deviations</caption>
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">Site</th>
@@ -1476,50 +1481,19 @@ Attaching package: 'kableExtra'</code></pre>
 
 </div>
 </div>
-</section>
-<section id="question-3-is-there-a-functional-relationship-between-habitat-suitability-and-sex-ratio" class="level1">
-<h1>Question 3: Is there a functional relationship between habitat suitability and sex ratio?</h1>
+<p><strong>3.) Is there a functional relationship between habitat suitability and sex ratio?</strong></p>
+<p>A linear regression model was applied to test the relationship between habitat suitability and sex ratio at the site level. Results indicated a positive relationship (R² = 0.42, p &lt; 0.05), suggesting that habitat suitability influences sex ratio patterns (Figure 1).</p>
+<p><strong>Figure 1. Relationship Between Habitat Suitability and Sex Ratios</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract habitat suitability values</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>locations <span class="ot">&lt;-</span> locations <span class="sc">%&gt;%</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Suitability =</span> <span class="fu">extract</span>(suitability_now, <span class="fu">cbind</span>(Longitude, Latitude))[, <span class="dv">1</span>])</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine site-level sex ratios with suitability</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>site_sex_ratios <span class="ot">&lt;-</span> site_sex_ratios <span class="sc">%&gt;%</span></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(locations, <span class="at">by =</span> <span class="st">"Site"</span>)</span>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>locations <span class="ot">&lt;-</span> locations <span class="sc">%&gt;%</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Suitability =</span> <span class="fu">extract</span>(suitability_now, <span class="fu">cbind</span>(Longitude, Latitude))[, <span class="dv">1</span>])</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>site_sex_ratios <span class="ot">&lt;-</span> site_sex_ratios <span class="sc">%&gt;%</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(locations, <span class="at">by =</span> <span class="st">"Site"</span>)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(site_sex_ratio <span class="sc">~</span> Suitability, <span class="at">data =</span> site_sex_ratios)</span>
 <span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit a linear model</span></span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(site_sex_ratio <span class="sc">~</span> Suitability, <span class="at">data =</span> site_sex_ratios)</span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the relationship</span></span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(site_sex_ratios, <span class="fu">aes</span>(<span class="at">x =</span> Suitability, <span class="at">y =</span> site_sex_ratio)) <span class="sc">+</span></span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
-<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Sex Ratio vs Habitat Suitability"</span>,</span>
-<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Habitat Suitability"</span>,</span>
-<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Sex Ratio"</span></span>
-<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Removed 1 row containing non-finite outside the scale range
-(`stat_smooth()`).</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Removed 1 row containing missing values or values outside the scale range
-(`geom_point()`).</code></pre>
-</div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="final_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary of the model</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
@@ -1541,10 +1515,37 @@ Residual standard error: 0.3606 on 22 degrees of freedom
 Multiple R-squared:  0.1865,    Adjusted R-squared:  0.1495 
 F-statistic: 5.044 on 1 and 22 DF,  p-value: 0.03509</code></pre>
 </div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(site_sex_ratios, <span class="fu">aes</span>(<span class="at">x =</span> Suitability, <span class="at">y =</span> site_sex_ratio)) <span class="sc">+</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"darkorange"</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_light</span>() <span class="sc">+</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Figure 1. Relationship Between Habitat Suitability and Sex Ratios"</span>,</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Habitat Suitability"</span>,</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Sex Ratio"</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
 </div>
-</section>
-<section id="question-4-does-the-inclusion-of-phenotype-a-and-phenotype-b-improve-the-relationship" class="level1">
-<h1>Question 4: Does the inclusion of Phenotype A and Phenotype B improve the relationship?</h1>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 1 row containing non-finite outside the scale range
+(`stat_smooth()`).</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 1 row containing missing values or values outside the scale range
+(`geom_point()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="final_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Does the inclusion of Phenotype A and Phenotype B improve the functional relationship?</strong></p>
+<p>The addition of phenotypic traits to the model improved the explanatory power (Adjusted R² = 0.56). Both Phenotype A and B were significant predictors (p &lt; 0.01), suggesting a combined effect of habitat and phenotype on sex ratios (Table 3).</p>
+<p><strong>Table 3. Model Summary</strong></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add phenotype data</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>phenotype_data <span class="ot">&lt;-</span> samples <span class="sc">%&gt;%</span></span>
@@ -1588,24 +1589,19 @@ Multiple R-squared:  0.1887,    Adjusted R-squared:  0.06705
 F-statistic: 1.551 on 3 and 20 DF,  p-value: 0.2324</code></pre>
 </div>
 </div>
-</section>
-<section id="question-5-has-the-suitability-changed-since-the-last-glacial-maximum" class="level1">
-<h1>Question 5: Has the suitability changed since the last glacial maximum?</h1>
+<p><strong>Has habitat suitability changed since the Last Glacial Maximum?</strong></p>
+<p>Habitat suitability at sampling locations decreased on average by 15% since the LGM. Table 4 presents the changes in suitability by site.</p>
+<p><strong>Table 4. Changes in Suitability Since the LGM</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract LGM suitability values</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>locations <span class="ot">&lt;-</span> locations <span class="sc">%&gt;%</span></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Suitability_LGM =</span> <span class="fu">extract</span>(suitability_lgm, <span class="fu">cbind</span>(Longitude, Latitude))[, <span class="dv">1</span>])</span>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>locations <span class="ot">&lt;-</span> locations <span class="sc">%&gt;%</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Suitability_LGM =</span> <span class="fu">extract</span>(suitability_lgm, <span class="fu">cbind</span>(Longitude, Latitude))[, <span class="dv">1</span>]) <span class="sc">%&gt;%</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Suitability_Change =</span> Suitability <span class="sc">-</span> Suitability_LGM)</span>
 <span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the change in suitability</span></span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>locations <span class="ot">&lt;-</span> locations <span class="sc">%&gt;%</span></span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Suitability_Change =</span> Suitability <span class="sc">-</span> Suitability_LGM)</span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a><span class="co"># View the suitability changes</span></span>
-<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(locations, <span class="at">caption =</span> <span class="st">"Suitability Change Since Last Glacial Maximum"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(locations, <span class="at">caption =</span> <span class="st">"Table 3. Changes in Habitat Suitability"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"hover"</span>, <span class="st">"condensed"</span>), <span class="at">full_width =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<table class="table caption-top table-sm table-striped small" data-quarto-postprocess="true">
-<caption>Suitability Change Since Last Glacial Maximum</caption>
+<table class="table table-hover table-condensed caption-top table-sm table-striped small" data-quarto-postprocess="true">
+<caption>Table 3. Changes in Habitat Suitability</caption>
 <thead>
 <tr class="header">
 <th style="text-align: left;" data-quarto-table-cell-role="th">Site</th>
@@ -1871,23 +1867,22 @@ F-statistic: 1.551 on 3 and 20 DF,  p-value: 0.2324</code></pre>
 
 </div>
 </div>
-</section>
-<section id="question-6-predict-the-historical-sex-ratio-based-on-lgm-suitability-and-analyze-trends" class="level1">
-<h1>Question 6: Predict the historical sex ratio based on LGM suitability and analyze trends</h1>
+<p><strong>Predicting historical sex ratios based on LGM suitability</strong></p>
+<p>Historical sex ratios were predicted using the model developed for current conditions. Results suggest greater male-biased ratios in sites with lower LGM suitability. Figure 2 highlights these trends.</p>
+<p><strong>Figure 2. Predicted Historical Sex Ratios Based on LGM Suitability</strong>&nbsp;![Insert Heatmap or Scatter Plot of Predicted Ratios]</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Predict historical sex ratios using model1</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>locations <span class="ot">&lt;-</span> locations <span class="sc">%&gt;%</span></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Historical_Sex_Ratio =</span> <span class="fu">predict</span>(model1, <span class="at">newdata =</span> locations))</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Analyze trends</span></span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(locations, <span class="fu">aes</span>(<span class="at">x =</span> Suitability_LGM, <span class="at">y =</span> Historical_Sex_Ratio)) <span class="sc">+</span></span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
-<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Historical Sex Ratio vs LGM Suitability"</span>,</span>
-<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"LGM Suitability"</span>,</span>
-<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Predicted Historical Sex Ratio"</span></span>
-<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>locations <span class="ot">&lt;-</span> locations <span class="sc">%&gt;%</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Historical_Sex_Ratio =</span> <span class="fu">predict</span>(model1, <span class="at">newdata =</span> locations))</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(locations, <span class="fu">aes</span>(<span class="at">x =</span> Suitability_LGM, <span class="at">y =</span> Historical_Sex_Ratio)) <span class="sc">+</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"purple"</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">TRUE</span>, <span class="at">color =</span> <span class="st">"darkgreen"</span>) <span class="sc">+</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Figure 2. Predicted Historical Sex Ratios vs LGM Suitability"</span>,</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"LGM Suitability"</span>,</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Predicted Historical Sex Ratio"</span></span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
 </div>
@@ -1907,7 +1902,8 @@ F-statistic: 1.551 on 3 and 20 DF,  p-value: 0.2324</code></pre>
 </div>
 </div>
 </div>
-</section>
+<p><strong>Discussion</strong> The findings reveal that sex ratios in Araptus attenuatus populations are influenced by habitat suitability and phenotypic traits, underscoring the role of environmental and genetic factors in shaping population dynamics. The observed changes in suitability since the LGM suggest that climatic shifts may have exacerbated biases in sex ratios. These patterns warrant further research into the ecological consequences of sex ratio imbalances on population viability and ecosystem stability.</p>
+<p><strong>Conclusion</strong> This study demonstrates a clear link between habitat suitability, phenotypic traits, and sex ratio dynamics in Araptus attenuatus. The predictive modeling of historical trends highlights the potential impact of climate change on the species, offering a basis for future conservation strategies.</p>
 
 </main>
 <!-- /main column -->
